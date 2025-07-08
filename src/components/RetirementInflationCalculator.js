@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Calculator, TrendingUp, DollarSign, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Info } from 'lucide-react';
 
 const RetirementCalculator = () => {
@@ -17,6 +17,8 @@ const RetirementCalculator = () => {
   const [showDetails, setShowDetails] = useState(false);
   
   const [results, setResults] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // Preset values
   const inflationRates = {
@@ -37,7 +39,166 @@ const RetirementCalculator = () => {
   };
 
   // Get actual inflation rate based on scenario
-  const inflationRate = inflationRates[inflationScenario];
+  const inflationRate = useMemo(() => inflationRates[inflationScenario], [inflationScenario, customInflation]);
+
+  // Memoized validation function
+  const validateInputs = useCallback(() => {
+    const newErrors = {};
+    
+    if (currentAge < 18 || currentAge > 120) {
+      newErrors.currentAge = 'Age must be between 18 and 120';
+    }
+    
+    if (retirementAge <= currentAge) {
+      newErrors.retirementAge = 'Retirement age must be after current age';
+    }
+    
+    if (retirementAge < 40 || retirementAge > 80) {
+      newErrors.retirementAge = 'Retirement age must be between 40 and 80';
+    }
+    
+    if (lifeExpectancy <= retirementAge) {
+      newErrors.lifeExpectancy = 'Life expectancy must be after retirement age';
+    }
+    
+    if (lifeExpectancy < 70 || lifeExpectancy > 120) {
+      newErrors.lifeExpectancy = 'Life expectancy must be between 70 and 120';
+    }
+    
+    if (desiredIncome <= 0) {
+      newErrors.desiredIncome = 'Desired income must be positive';
+    }
+    
+    if (desiredIncome > 10000000) {
+      newErrors.desiredIncome = 'Desired income seems unusually high';
+    }
+    
+    if (initialInvestment < 0) {
+      newErrors.initialInvestment = 'Initial investment cannot be negative';
+    }
+    
+    if (annualContribution < 0) {
+      newErrors.annualContribution = 'Annual contribution cannot be negative';
+    }
+    
+    if (expectedReturn < -50 || expectedReturn > 100) {
+      newErrors.expectedReturn = 'Expected return must be between -50% and 100%';
+    }
+    
+    if (returnDuringRetirement < -50 || returnDuringRetirement > 100) {
+      newErrors.returnDuringRetirement = 'Retirement return must be between -50% and 100%';
+    }
+    
+    if (customInflation < -20 || customInflation > 50) {
+      newErrors.customInflation = 'Custom inflation must be between -20% and 50%';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [currentAge, retirementAge, lifeExpectancy, desiredIncome, initialInvestment, annualContribution, expectedReturn, returnDuringRetirement, customInflation]);
+
+  // Load saved data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('retirementCalculatorData');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setCurrentAge(parsedData.currentAge || 20);
+        setRetirementAge(parsedData.retirementAge || 60);
+        setLifeExpectancy(parsedData.lifeExpectancy || 100);
+        setDesiredIncome(parsedData.desiredIncome || 100000);
+        setInflationScenario(parsedData.inflationScenario || 'moderate');
+        setCustomInflation(parsedData.customInflation || 2.7);
+        setExpectedReturn(parsedData.expectedReturn || 21.0);
+        setReturnDuringRetirement(parsedData.returnDuringRetirement || 21.0);
+        setInitialInvestment(parsedData.initialInvestment || 21000);
+        setAnnualContribution(parsedData.annualContribution || 21000);
+        setTaxRate(parsedData.taxRate || 22);
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    }
+  }, []);
+
+  // Save data to localStorage whenever inputs change
+  useEffect(() => {
+    const dataToSave = {
+      currentAge,
+      retirementAge,
+      lifeExpectancy,
+      desiredIncome,
+      inflationScenario,
+      customInflation,
+      expectedReturn,
+      returnDuringRetirement,
+      initialInvestment,
+      annualContribution,
+      taxRate
+    };
+    localStorage.setItem('retirementCalculatorData', JSON.stringify(dataToSave));
+  }, [currentAge, retirementAge, lifeExpectancy, desiredIncome, inflationScenario, customInflation, expectedReturn, returnDuringRetirement, initialInvestment, annualContribution, taxRate]);
+
+  // Export functionality
+  const exportPlan = () => {
+    const planData = {
+      inputs: {
+        currentAge,
+        retirementAge,
+        lifeExpectancy,
+        desiredIncome,
+        inflationScenario,
+        customInflation,
+        expectedReturn,
+        returnDuringRetirement,
+        initialInvestment,
+        annualContribution,
+        taxRate
+      },
+      results,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(planData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `retirement-plan-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import functionality
+  const importPlan = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const planData = JSON.parse(e.target.result);
+          if (planData.inputs) {
+            setCurrentAge(planData.inputs.currentAge || 20);
+            setRetirementAge(planData.inputs.retirementAge || 60);
+            setLifeExpectancy(planData.inputs.lifeExpectancy || 100);
+            setDesiredIncome(planData.inputs.desiredIncome || 100000);
+            setInflationScenario(planData.inputs.inflationScenario || 'moderate');
+            setCustomInflation(planData.inputs.customInflation || 2.7);
+            setExpectedReturn(planData.inputs.expectedReturn || 21.0);
+            setReturnDuringRetirement(planData.inputs.returnDuringRetirement || 21.0);
+            setInitialInvestment(planData.inputs.initialInvestment || 21000);
+            setAnnualContribution(planData.inputs.annualContribution || 21000);
+            setTaxRate(planData.inputs.taxRate || 22);
+          }
+        } catch (error) {
+          console.error('Error importing plan:', error);
+          alert('Error importing plan. Please check the file format.');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
 
   // Corrected calculation function
   const calculateRetirementNeeds = (currentAge, retirementAge, lifeExpectancy, desiredIncome, inflationRate, returnDuringRetirement, taxRate) => {
@@ -187,15 +348,26 @@ const RetirementCalculator = () => {
     return years;
   };
 
+
+
   useEffect(() => {
-    const yearsToRetirement = retirementAge - currentAge;
+    // Validate inputs before calculating
+    if (!validateInputs()) {
+      setResults(null);
+      return;
+    }
+
+    setIsCalculating(true);
     
-    // Calculate needs for different scenarios
-    const scenarios = {
-      conservative: calculateRetirementNeeds(currentAge, retirementAge, lifeExpectancy, desiredIncome, 4.5, returnDuringRetirement, taxRate),
-      base: calculateRetirementNeeds(currentAge, retirementAge, lifeExpectancy, desiredIncome, inflationRate, returnDuringRetirement, taxRate),
-      optimistic: calculateRetirementNeeds(currentAge, retirementAge, lifeExpectancy, desiredIncome, 1.8, returnDuringRetirement, taxRate)
-    };
+    try {
+      const yearsToRetirement = retirementAge - currentAge;
+      
+      // Calculate needs for different scenarios
+      const scenarios = {
+        conservative: calculateRetirementNeeds(currentAge, retirementAge, lifeExpectancy, desiredIncome, 4.5, returnDuringRetirement, taxRate),
+        base: calculateRetirementNeeds(currentAge, retirementAge, lifeExpectancy, desiredIncome, inflationRate, returnDuringRetirement, taxRate),
+        optimistic: calculateRetirementNeeds(currentAge, retirementAge, lifeExpectancy, desiredIncome, 1.8, returnDuringRetirement, taxRate)
+      };
     
     // Calculate what you'll have
     const projectedValue = calculateFutureValue(initialInvestment, annualContribution, expectedReturn, yearsToRetirement);
@@ -239,23 +411,29 @@ const RetirementCalculator = () => {
     // Break-even analysis
     const breakEvenReturn = inflationRate;
     
-    setResults({
-      scenarios,
-      projectedValue,
-      baseGap,
-      conservativeGap,
-      additionalAnnual,
-      requiredReturns,
-      yearsToRetirement,
-      totalContributions: initialInvestment + (annualContribution * yearsToRetirement),
-      withdrawalSchedule,
-      afterTaxIncome: desiredIncome,
-      preTaxIncome: scenarios.base.preTaxIncome,
-      withdrawalRate,
-      portfolioLongevity,
-      realReturn,
-      breakEvenReturn
-    });
+      setResults({
+        scenarios,
+        projectedValue,
+        baseGap,
+        conservativeGap,
+        additionalAnnual,
+        requiredReturns,
+        yearsToRetirement,
+        totalContributions: initialInvestment + (annualContribution * yearsToRetirement),
+        withdrawalSchedule,
+        afterTaxIncome: desiredIncome,
+        preTaxIncome: scenarios.base.preTaxIncome,
+        withdrawalRate,
+        portfolioLongevity,
+        realReturn,
+        breakEvenReturn
+      });
+    } catch (error) {
+      console.error('Calculation error:', error);
+      setResults(null);
+    } finally {
+      setIsCalculating(false);
+    }
   }, [currentAge, retirementAge, lifeExpectancy, desiredIncome, inflationRate, initialInvestment, annualContribution, expectedReturn, returnDuringRetirement, taxRate]);
 
   const formatCurrency = (value) => {
@@ -282,7 +460,26 @@ const RetirementCalculator = () => {
 
       {/* Inputs */}
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Your Information</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Your Information</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={exportPlan}
+              className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            >
+              Export Plan
+            </button>
+            <label className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors cursor-pointer">
+              Import Plan
+              <input
+                type="file"
+                accept=".json"
+                onChange={importPlan}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -291,8 +488,13 @@ const RetirementCalculator = () => {
               type="number"
               value={currentAge}
               onChange={(e) => setCurrentAge(parseInt(e.target.value) || 0)}
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                errors.currentAge ? 'border-red-500' : ''
+              }`}
             />
+            {errors.currentAge && (
+              <p className="text-xs text-red-600 mt-1">{errors.currentAge}</p>
+            )}
           </div>
           
           <div>
@@ -301,8 +503,13 @@ const RetirementCalculator = () => {
               type="number"
               value={retirementAge}
               onChange={(e) => setRetirementAge(parseInt(e.target.value) || 0)}
-              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+                errors.retirementAge ? 'border-red-500' : ''
+              }`}
             />
+            {errors.retirementAge && (
+              <p className="text-xs text-red-600 mt-1">{errors.retirementAge}</p>
+            )}
           </div>
           
           <div>
@@ -407,8 +614,16 @@ const RetirementCalculator = () => {
         </div>
       </div>
 
+      {/* Loading State */}
+      {isCalculating && (
+        <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-gray-600 mt-2">Calculating your retirement plan...</p>
+        </div>
+      )}
+
       {/* Results */}
-      {results && (
+      {results && !isCalculating && (
         <>
           {/* Primary Result */}
           <div className={`rounded-lg shadow-lg p-6 ${results.baseGap <= 0 ? 'bg-green-50 border-2 border-green-500' : 'bg-amber-50 border-2 border-amber-500'}`}>

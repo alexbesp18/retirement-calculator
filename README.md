@@ -1,70 +1,151 @@
-# Getting Started with Create React App
+# Retirement Calculator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive retirement planning tool built with React that helps users calculate their retirement needs, analyze different scenarios, and make informed financial decisions.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### 🎯 **Core Functionality**
+- **Retirement Needs Calculation**: Determine how much you need to save for retirement
+- **Inflation Impact Analysis**: See how inflation affects your retirement income needs
+- **Multiple Scenarios**: Compare conservative, moderate, and optimistic inflation scenarios
+- **Withdrawal Strategy**: Detailed year-by-year portfolio projection during retirement
+- **Tax Considerations**: Account for tax rates in retirement income planning
 
-### `npm start`
+### 📊 **Advanced Analysis**
+- **Portfolio Longevity**: Calculate how long your portfolio will last
+- **Withdrawal Rate Analysis**: Determine safe withdrawal rates
+- **Real Return Calculations**: Understand returns after inflation adjustment
+- **Sensitivity Analysis**: See how changes in assumptions affect outcomes
+- **Break-even Analysis**: Identify minimum returns needed to maintain purchasing power
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 💾 **Data Management**
+- **Local Storage**: Automatically saves your inputs for future sessions
+- **Export/Import**: Save and share your retirement plans as JSON files
+- **Form Validation**: Comprehensive input validation with helpful error messages
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 🎨 **User Experience**
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Real-time Calculations**: Instant updates as you modify inputs
+- **Loading States**: Visual feedback during complex calculations
+- **Detailed Insights**: Expandable sections with comprehensive analysis
+- **Modern UI**: Clean, intuitive interface with Tailwind CSS
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js (version 14 or higher)
+- npm or yarn
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd retirement-calculator
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Start the development server:
+```bash
+npm start
+```
 
-### `npm run eject`
+4. Open [http://localhost:3000](http://localhost:3000) to view the application
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Available Scripts
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `npm start` - Runs the app in development mode
+- `npm test` - Launches the test runner
+- `npm run build` - Builds the app for production
+- `npm run eject` - Ejects from Create React App (one-way operation)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Usage
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Basic Inputs
+1. **Personal Information**: Enter your current age, retirement age, and life expectancy
+2. **Financial Goals**: Specify your desired after-tax annual income in retirement
+3. **Current Savings**: Input your current portfolio value and annual contribution
+4. **Return Assumptions**: Set expected returns for pre-retirement and retirement periods
+5. **Inflation Scenario**: Choose from preset scenarios or enter a custom rate
+6. **Tax Rate**: Select your expected tax bracket in retirement
 
-## Learn More
+### Understanding Results
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### Primary Outlook
+- **Minimum Needed**: The portfolio value required to meet your income goals
+- **You'll Have**: Your projected portfolio value at retirement
+- **Surplus/Shortfall**: The difference between what you need and what you'll have
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### Action Items
+- **Increase Savings**: Additional annual contribution needed to reach your goal
+- **Higher Returns**: Required return rate to achieve your target
+- **Sensitivity Analysis**: How different scenarios affect your needs
 
-### Code Splitting
+#### Detailed Analysis
+- **Withdrawal Schedule**: Year-by-year portfolio projection
+- **Advanced Metrics**: Withdrawal rate, portfolio longevity, real returns
+- **Key Insights**: Compounding power, inflation impact, time value analysis
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Technical Details
 
-### Analyzing the Bundle Size
+### Architecture
+- **React 19**: Latest React features with hooks and functional components
+- **Tailwind CSS**: Utility-first CSS framework for styling
+- **Lucide React**: Modern icon library
+- **Local Storage**: Client-side data persistence
+- **File Export/Import**: JSON-based data portability
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Key Calculations
+- **Future Value**: Compound interest with regular contributions
+- **Retirement Needs**: Present value of inflation-adjusted income stream
+- **Withdrawal Strategy**: Year-by-year portfolio depletion analysis
+- **Required Returns**: Newton's method for rate calculation with contributions
 
-### Making a Progressive Web App
+### Performance Optimizations
+- **Memoization**: React.useMemo and useCallback for expensive calculations
+- **Debounced Updates**: Efficient re-rendering during user input
+- **Error Boundaries**: Graceful handling of calculation errors
+- **Loading States**: User feedback during complex computations
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Testing
 
-### Advanced Configuration
+The application includes comprehensive tests covering:
+- Component rendering and user interactions
+- Input validation and error handling
+- Calculation accuracy and edge cases
+- Data persistence and export/import functionality
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Run tests with:
+```bash
+npm test
+```
 
-### Deployment
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### `npm run build` fails to minify
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Disclaimer
+
+This calculator is for educational and planning purposes only. It provides estimates based on the assumptions you enter. Actual investment returns and inflation rates will vary. Consider consulting with a qualified financial advisor for personalized retirement planning advice.
+
+## Future Enhancements
+
+- [ ] Social Security integration
+- [ ] Monte Carlo simulation for return variability
+- [ ] Multiple retirement income sources
+- [ ] Estate planning considerations
+- [ ] Mobile app version
+- [ ] Cloud-based data storage
+- [ ] Collaborative planning features
