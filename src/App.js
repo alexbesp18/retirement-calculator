@@ -1,11 +1,11 @@
 import React from 'react';
-import RetirementInflationCalculator from './components/RetirementInflationCalculator';
+import RetirementCalculator from './components/RetirementInflationCalculator';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <RetirementInflationCalculator />
+      <RetirementCalculator />
     </div>
   );
 }
