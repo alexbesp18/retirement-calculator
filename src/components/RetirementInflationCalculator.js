@@ -3,16 +3,16 @@ import { Calculator, TrendingUp, DollarSign, AlertCircle, CheckCircle, ChevronDo
 
 const RetirementCalculator = () => {
   // State
-  const [currentAge, setCurrentAge] = useState(29);
-  const [retirementAge, setRetirementAge] = useState(50);
-  const [lifeExpectancy, setLifeExpectancy] = useState(90);
+  const [currentAge, setCurrentAge] = useState(20);
+  const [retirementAge, setRetirementAge] = useState(60);
+  const [lifeExpectancy, setLifeExpectancy] = useState(100);
   const [desiredIncome, setDesiredIncome] = useState(100000);
   const [inflationScenario, setInflationScenario] = useState('moderate');
   const [customInflation, setCustomInflation] = useState(2.7);
-  const [expectedReturn, setExpectedReturn] = useState(9.6);
-  const [returnDuringRetirement, setReturnDuringRetirement] = useState(5.0);
-  const [initialInvestment, setInitialInvestment] = useState(50000);
-  const [annualContribution, setAnnualContribution] = useState(10000);
+  const [expectedReturn, setExpectedReturn] = useState(21.0);
+  const [returnDuringRetirement, setReturnDuringRetirement] = useState(21.0);
+  const [initialInvestment, setInitialInvestment] = useState(21000);
+  const [annualContribution, setAnnualContribution] = useState(21000);
   const [taxRate, setTaxRate] = useState(22);
   const [showDetails, setShowDetails] = useState(false);
   
